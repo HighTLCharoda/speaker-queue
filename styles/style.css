@@ -7,40 +7,18 @@
     pointer-events: none;
 }
 
-.speaker-item {
-    border: 3px solid;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    background-size: cover;
-}
-
-.speaker-item.active {
-    width: 80px;
-    height: 80px;
-}
-
-.speaker-item.waiting {
-    width: 50px;
-    height: 50px;
-}
-
 #hotbar {
-    /* Позволяет вложенному контейнеру позиционироваться относительно хотбара */
     position: relative !important;
 }
 
 #speaker-queue-container {
 
     bottom: calc(100% + 15px);
-    /* Ровно над хотбаром + 15px отступа */
     left: 20px;
     display: flex;
     align-items: center;
-    /* Выравнивание по нижней линии */
     gap: 10px;
     z-index: 30;
-    /* Если в Foundry используется переменная --faded-ui для прозрачности */
-    --ui-fade-opacity: 1;
 }
 
 .speaker-item {
@@ -52,11 +30,9 @@
     image-rendering: smooth;
 }
 
-/* Стиль для первого в очереди */
 .speaker-item.first-speaker {
     z-index: 10;
     animation: speaker-glow 2s infinite ease-in-out;
-    /* Тень использует переменную, которую мы передадим из JS */
     box-shadow: 0 0 10px var(--user-color);
 }
 
@@ -69,7 +45,6 @@
     50% {
         box-shadow: 0 0 5px var(--user-color), 0 0 15px var(--user-color);
         transform: scale(1.00);
-        /* Легкое увеличение для акцента */
     }
 
     100% {

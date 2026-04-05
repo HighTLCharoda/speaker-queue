@@ -1,13 +1,12 @@
 class SpeakerQueue {
   static ID = "speaker-queue";
-  static socket; // Здесь будем хранить переменную сокета
+  static socket; 
 
   static init() {
     console.log(`${this.ID} | Initializing...`);
 
     this.registerSettings();
 
-    // Регистрация хоткея
     game.keybindings.register(this.ID, "toggleKey", {
       name: "Встать в очередь / Выйти",
       editable: [{ key: "KeyI" }],
@@ -17,7 +16,6 @@ class SpeakerQueue {
   }
 
   static registerSettings() {
-    // Форма: круг или квадрат
     game.settings.register(this.ID, "shape", {
       name: "Форма элементов",
       scope: "world",
@@ -28,7 +26,6 @@ class SpeakerQueue {
       onChange: () => this.render(),
     });
 
-    // Приоритет выбора изображения
     game.settings.register(this.ID, "imagePriority", {
       name: "Приоритет изображения",
       scope: "world",
@@ -42,7 +39,6 @@ class SpeakerQueue {
       onChange: () => this.render(),
     });
 
-    // Сама очередь (скрыта из меню)
     game.settings.register(this.ID, "queue", {
       scope: "world",
       config: false,
@@ -52,7 +48,6 @@ class SpeakerQueue {
     });
   }
 
-  // Функция, которая будет реально изменять настройки (выполняется ТОЛЬКО на стороне GM)
   static async updateQueue(uid) {
     let queue = [...(game.settings.get(this.ID, "queue") || [])];
 
@@ -64,8 +59,6 @@ class SpeakerQueue {
         const userA = game.users.get(a);
         const userB = game.users.get(b);
 
-        // Считаем роль 1 (Player) и 2 (Trusted) как одинаковую (значение 1)
-        // Роли ГМа (3 и 4) остаются выше
         const roleA = userA?.role <= 2 ? 1 : userA?.role || 0;
         const roleB = userB?.role <= 2 ? 1 : userB?.role || 0;
 
@@ -78,8 +71,6 @@ class SpeakerQueue {
 
   static requestToggle() {
     const uid = game.user.id;
-    // Используем socketlib для вызова функции на стороне ГМа
-    // executeAsGM гарантирует, что функция выполнится от имени первого активного ГМа
     this.socket.executeAsGM("updateQueue", uid);
   }
 
@@ -93,7 +84,6 @@ class SpeakerQueue {
     if (!container) {
       container = document.createElement("div");
       container.id = "speaker-queue-container";
-      // Вставляем ВНУТРЬ хотбара, чтобы позиционировать относительно него
       hotbar.appendChild(container);
     }
 
@@ -147,12 +137,9 @@ class SpeakerQueue {
   }
 }
 
-// РЕГИСТРАЦИЯ SOCKETLIB
 Hooks.once("socketlib.ready", () => {
-  // Регистрируем наш модуль в socketlib
   SpeakerQueue.socket = socketlib.registerModule(SpeakerQueue.ID);
 
-  // Регистрируем функцию, которую разрешаем вызывать удаленно
   SpeakerQueue.socket.register(
     "updateQueue",
     SpeakerQueue.updateQueue.bind(SpeakerQueue),
@@ -161,17 +148,6 @@ Hooks.once("socketlib.ready", () => {
 
 Hooks.once("init", () => SpeakerQueue.init());
 Hooks.once("ready", () => SpeakerQueue.render());
-
-// Перерисовываем при изменении размера окна
-window.addEventListener("resize", () => {
-  if (game.ready) SpeakerQueue.render();
-});
-
-// Перерисовываем при скрытии/раскрытии боковой панели (sidebar),
-// так как это двигает хотбар в Foundry
-Hooks.on("collapseSidebar", () => {
-  setTimeout(() => SpeakerQueue.render(), 200); // Небольшая задержка для завершения анимации
-});
 
 Hooks.on("updateSetting", (setting) => {
   if (setting.key.includes(SpeakerQueue.ID)) SpeakerQueue.render();
