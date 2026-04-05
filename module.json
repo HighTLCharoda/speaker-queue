@@ -1,0 +1,19 @@
+{
+  "id": "speaker-queue",
+  "title": "Speaker Queue",
+  "description": "Очередь говорящих с приоритетом по ролям.",
+  "version": "1.0.0",
+  "compatibility": { "minimum": "13", "verified": "13" },
+  "authors": [{ "name": "HighTLCharoda" }],
+  "esmodules": ["scripts/main.js"],
+  "styles": ["styles/style.css"],
+  "socket": true,
+  "relationships": {
+        "requires": [
+            {
+                "id": "socketlib",
+                "type": "module"
+            }
+        ]
+    }
+}
